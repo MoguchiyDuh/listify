@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 from db.connection import get_session
-from db.crud.find_content import find_content, find_all_content
+from db.crud.get_content import get_content, get_all_content
 from db.crud.anime_crud import add_anime, get_anime
 from db.crud.movie_crud import add_movie, get_movie
 from db.crud.series_crud import add_series, get_series
@@ -78,28 +78,25 @@ async def all_content_search_endpoint(
     content_type: Literal["anime", "game", "movie", "series"],
     page: Optional[int] = 1,
     page_size: Optional[int] = 10,
-    sort: Literal["popularity", "rating", "release_date", "title"] = "popularity",
+    sort_by: Literal["popularity", "rating", "release_date", "title"] = "popularity",
     sort_order: Literal["desc", "asc"] = "desc",
     db: AsyncSession = Depends(get_session),
 ):
-    content = await find_all_content(
+    content = await get_all_content(
         db=db,
         content_type=content_type,
         page=page,
         page_size=page_size,
-        sort=sort,
+        sort_by=sort_by,
         sort_order=sort_order,
     )
     return content
 
 
-@router.get("/search/{content_type}/{content_id}")
+@router.get("/search/{content_id}")
 async def content_search_endpoint(
-    content_type: Literal["anime", "game", "movie", "series"],
     content_id: int,
     db: AsyncSession = Depends(get_session),
 ):
-    content = await find_content(
-        db=db, content_type=content_type, content_id=content_id
-    )
+    content = await get_content(db=db, content_id=content_id)
     return content

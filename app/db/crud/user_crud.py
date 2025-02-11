@@ -4,23 +4,22 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from . import logger
-from db.models.user_model import User
+from db.models.user_models import User
 from schemas.user_schemas import UserCreate, UserUpdate
 
 
 async def get_user(
     db: AsyncSession, user_identifier: Union[int, str, None]
 ) -> Union[User, None]:
-    """Retrieves a user by ID, username, or email.
-
-    Returns `None` if no user identifier was provided.
+    # gen google style docstring
+    """Retrieves a user from the database based on their identifier.
 
     Args:
-        db (AsyncSession, optional): Database session.
-        user_identifier: Union[int, str, None]: User ID, username, or email.
+        db (AsyncSession, optional): The database session used for querying. This is injected by the `Depends(get_session)` dependency. Defaults to a new session if not provided.
+        user_identifier (Union[int, str], optional): The identifier of the user to retrieve. If an integer is provided, it will be used as the user ID. If a string is provided, it will be used as the user username or email. Defaults to None.
 
     Returns:
-        Union[User, None]: The found user or `None` if not found.
+        User|None: The user object if found, None otherwise.
     """
 
     if not user_identifier:
@@ -94,7 +93,7 @@ async def delete_user(db: AsyncSession, user: User) -> dict:
         user (User): User to be deleted.
 
     Returns:
-        dict: Success message.
+        dict: A dictionary containing a message indicating the deletion status. `{'msg': ...}`
     """
 
     if user.avatar is not None and os.path.exists(user.avatar):
@@ -102,6 +101,6 @@ async def delete_user(db: AsyncSession, user: User) -> dict:
 
     await db.delete(user)
     await db.commit()
-    logger.info(f"User {user.id} {user.username} deleted")
+    logger.info(f"{user} deleted")
 
-    return {"msg": "User has been deleted successfully"}
+    return {"msg": f"{user} has been deleted successfully"}

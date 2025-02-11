@@ -1,19 +1,18 @@
 from datetime import date
 from typing import Optional, Union
 import aiohttp
-from thefuzz import process, fuzz
 
 from . import logger
-from db.models import AgeRestriction
+from db.models import AgeRating
 from schemas.content_schemas import AnimeSchema
 
 age_restriction_map = {
-    "G - All Ages": AgeRestriction.G,
-    "PG - Children": AgeRestriction.PG,
-    "PG-13 - Teens 13 or older": AgeRestriction.PG13,
-    "R - 17+ (violence & profanity)": AgeRestriction.R,
-    "R+ - Mild Nudity": AgeRestriction.R,
-    "Rx - Hentai": AgeRestriction.NC17,
+    "G - All Ages": AgeRating.G,
+    "PG - Children": AgeRating.PG,
+    "PG-13 - Teens 13 or older": AgeRating.PG13,
+    "R - 17+ (violence & profanity)": AgeRating.R,
+    "R+ - Mild Nudity": AgeRating.R,
+    "Rx - Hentai": AgeRating.NC17,
 }
 
 
@@ -27,7 +26,7 @@ async def fetch_anime(
         title (str): The title of the anime.
 
     Returns:
-        Union[AnimeSchema, dict]: An `AnimeSchema` object if the anime is found,
+        Union[`AnimeSchema`,dict]: An `AnimeSchema` object if the anime is found,
         otherwise a dictionary with an error message.
     """
     jikan_url = f"https://api.jikan.moe/v4/anime?q={title}&limit=5&unapproved=true"
@@ -40,16 +39,6 @@ async def fetch_anime(
             else:
                 return {"msg": f"HTTP {response.status}"}
 
-    # anime_list = {item["title"]: item for item in data["data"]}
-    # anime_list.update({item["title_english"]: item for item in data["data"]})
-    # match = process.extractOne(
-    #     title, list(anime_list.keys()), scorer=fuzz., score_cutoff=90
-    # )
-    # match =
-    # if match is None:
-    #     return {"msg": "Anime not found"}
-    # else:
-    # item = anime_list[]
     item = data["data"][0]
     logger.debug(item)
 
@@ -57,10 +46,10 @@ async def fetch_anime(
         title=item["title"],
         translated_title=item.get("title_english", title),
         description=item["synopsis"],
-        rating=item["score"],
+        score=item["score"],
         popularity=item["popularity"],
         image_url=item["images"]["jpg"]["large_image_url"],
-        age_restriction=age_restriction_map[item["rating"]],
+        age_rating=age_restriction_map[item["rating"]],
         studios=[studio["name"] for studio in item.get("studios", [])],
         release_date=date.fromisoformat(item["aired"]["from"].split("T")[0]),
         is_ongoing=item["airing"],

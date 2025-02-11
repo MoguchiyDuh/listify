@@ -1,12 +1,11 @@
 from datetime import date
 from typing import Optional, Union
 import aiohttp
-from thefuzz import process
 
 from . import logger
 from core.config import RAWG_API_KEY
 from schemas.content_schemas import GameSchema
-from db.models import AgeRestriction, Platforms
+from db.models import AgeRating, Platforms
 
 platforms_map = {
     "PC": Platforms.PC,
@@ -21,11 +20,11 @@ platforms_map = {
     "Android": Platforms.ANDROID,
 }
 age_restriction_map = {
-    "Everyone": AgeRestriction.G,
-    "Everyone 10+": AgeRestriction.PG,
-    "Teen": AgeRestriction.PG13,
-    "Mature": AgeRestriction.R,
-    "Adults Only": AgeRestriction.NC17,
+    "Everyone": AgeRating.G,
+    "Everyone 10+": AgeRating.PG,
+    "Teen": AgeRating.PG13,
+    "Mature": AgeRating.R,
+    "Adults Only": AgeRating.NC17,
 }
 
 
@@ -34,13 +33,12 @@ async def fetch_game(
 ) -> Union[GameSchema, dict[str, str]]:
     """
     Searches for a game by title using the RAWG API.
-    If a match is found, it returns a `GameSchema` object with detailed game information.
 
     Args:
         title (str): The title of the game.
 
     Returns:
-        Union[GameSchema, dict[str, str]]: A `GameSchema` object containing game details
+        Union[`GameSchema`,dict[str,str]]: A `GameSchema` object containing game details
         if a match is found, otherwise a dictionary with an error message: `{"msg": ...}`.
     """
     rawg_search_url = (
@@ -56,14 +54,7 @@ async def fetch_game(
             else:
                 return {"msg": f"HTTP {response.status}"}
 
-        game_list = {item["id"]: item.get("name") for item in data["results"]}
-        match = process.extractOne(title, list(game_list.values()), score_cutoff=90)
-        if match is None:
-            return {"msg": "Game not found"}
-        else:
-            for id, value in game_list.items():
-                if match[0] == value:
-                    game_id = id
+        game_id = data["results"][0]["id"]
 
         rawg_game_url = f"https://api.rawg.io/api/games/{game_id}?key={RAWG_API_KEY}"
 
@@ -77,7 +68,7 @@ async def fetch_game(
     game = GameSchema(
         title=item["name"],
         description=item["description_raw"],
-        rating=(
+        score=(
             item["metacritic"]
             / 10  # the metacritic field is 0-100, so we need to divide by 10 to get 0.0-10.0
             if item["metacritic"] is not None
@@ -87,7 +78,7 @@ async def fetch_game(
         ),
         popularity=item["popularity"],
         image_url=item["background_image"],
-        age_restriction=(
+        age_rating=(
             age_restriction_map[item["esrb_rating"]["name"]]
             if item["esrb_rating"]
             else None

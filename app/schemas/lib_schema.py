@@ -1,13 +1,14 @@
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 from pydantic import BaseModel, Field
-from db.models import ContentType, Status
+
+
+from db.models import ContentType, Status, UserLibrary
 from .content_schemas import MovieSchema, SeriesSchema, AnimeSchema, GameSchema
 
 
 class QueueShowSchema(BaseModel):
-    content_type: ContentType
-    # content: Optional[Union[MovieSchema, SeriesSchema, AnimeSchema, GameSchema]] = None
-    content: Union[MovieSchema, SeriesSchema, AnimeSchema, GameSchema]
+    user_id: int
+    content_id: int
     user_rating: Optional[int] = None
     comment: Optional[str] = None
     favorite: bool
@@ -15,13 +16,12 @@ class QueueShowSchema(BaseModel):
     priority: int
 
 
-class QueueAddSchema(BaseModel):
-    content_type: ContentType
+class LibAddSchema(BaseModel):
     content_id: int
     user_rating: Optional[int] = Field(default=None, ge=0, le=10)
     comment: Optional[str] = None
     favorite: bool = False
-    status: Status
+    status: Literal["finished", "in_progress", "dropped", "planned"]
     priority: int = Field(
         default=0, ge=0, le=3
     )  # priority in [0,3], default is 0 (no priority)

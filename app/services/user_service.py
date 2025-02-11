@@ -8,7 +8,7 @@ from uuid import uuid4
 from db.connection import get_session
 from core.security import PasswordManager, TokenManager
 from core.logger import setup_logger
-from db.models.user_model import User
+from db.models.user_models import User
 from db.crud.user_crud import (
     get_user,
     create_user,
