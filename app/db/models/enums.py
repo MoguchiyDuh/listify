@@ -52,30 +52,35 @@ class AgeRating(str, Enum):
 
 
 class Platforms(str, Enum):
-    # generate google style docstring
     """Represents a game's platform.
 
     <h2>Values:</h2>
-        **PC**: Play on a PC or laptop.
-        **PS3**: Play on the PlayStation 3.
-        **PS4**: Play on the PlayStation 4.
-        **PS** 5: Play on the PlayStation 5.
-        **XBOX** 360: Play on the Xbox 360.
-        **XBOX** ONE: Play on the Xbox One.
-        **XBOX** SERIES X: Play on the Xbox Series X.
-        **NINTENDO** SWITCH: Play on the Nintendo Switch.
-        **IOS**: Play on the iOS.
-        **ANDROID**: Play on the Android.
-        **WEB**: Play on a web browser.
+        **PC**: Represents a PC game.
+        **LINUX**: Represents a Linux game.
+        **MACOS**: Represents a Mac OS X game.
+        **PSP**: Represents a Sony PlayStation Portable game.
+        **PS3**: Represents a PlayStation 3 game.
+        **PS4**: Represents a PlayStation 4 game.
+        **PS5**: Represents a PlayStation 5 game.
+        **XBOX_360**: Represents a Xbox 360 game.
+        **XBOX_ONE**: Represents a Xbox One game.
+        **XBOX_SERIES_SX**: Represents a Xbox Series S/X game.
+        **NINTENDO_SWITCH**: Represents a Nintendo Switch game.
+        **IOS**: Represents an iOS game.
+        **ANDROID**: Represents an Android game.
+        **WEB**: Represents a web-based game.
     """
 
     PC = "PC"
+    LINUX = "LINUX"
+    MACOS = "MACOS"
+    PSP = "PSP"
     PS3 = "PS3"
     PS4 = "PS4"
     PS5 = "PS5"
     XBOX_360 = "XBOX 360"
     XBOX_ONE = "XBOX ONE"
-    XBOX_SERIES_X = "XBOX SERIES X"
+    XBOX_SERIES_SX = "XBOX SERIES S/X"
     NINTENDO_SWITCH = "NINTENDO SWITCH"
     IOS = "IOS"
     ANDROID = "ANDROID"

@@ -8,14 +8,14 @@ from schemas.content_schemas import (
 )
 
 
-from typing import Literal, Type, Union
+from typing import Literal, Type
 from sqlalchemy import asc, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def get_content(
     db: AsyncSession, content_id: int
-) -> Union[Anime, Game, Movie, Series, None]:
+) -> Anime | Game | Movie | Series | None:
     """Get content by ID
 
     Args:
@@ -23,7 +23,7 @@ async def get_content(
         content_id (int): ID of the content to retrieve
 
     Returns:
-        Union[`Anime`,`Game`,`Movie`,`Series`,None]: The retrieved content or None if not found
+        `Anime`|`Game`|`Movie`|`Series`|None: The retrieved content or None if not found
     """
     result = await db.execute(select(Content).filter(Content.id == content_id))
     content = result.scalars().first()
@@ -38,7 +38,7 @@ async def get_content_by_type(
     page_size: int = 10,
     sort_by: Literal["popularity", "rating", "release_date", "title"] = "popularity",
     sort_order: Literal["desc", "asc"] = "desc",
-) -> list[Union[Anime, Game, Movie, Series]]:
+) -> list[Anime | Game | Movie | Series]:
     """Get content by type and page
 
     Args:
@@ -50,7 +50,7 @@ async def get_content_by_type(
         sort_order     (Literal["desc", "asc"], optional): Order of sorting. Defaults to "desc".
 
     Returns:
-        list[Union[`Anime`,`Game`,`Movie`,`Series`]]: List of retrieved content or empty list if not found
+        list[`Anime`|`Game`|`Movie`|`Series`]: List of retrieved content or empty list if not found
     """
     model_map = {
         "anime": Anime,
@@ -89,13 +89,13 @@ model_mapping: dict[Type[BaseModelSchema], Type[Content]] = {
 
 async def add_content(
     db: AsyncSession,
-    content_schema: Union[AnimeSchema, GameSchema, MovieSchema, SeriesSchema],
+    content_schema: AnimeSchema | GameSchema | MovieSchema | SeriesSchema,
 ):
     """Add content to the database
 
     Args:
         db  (AsyncSession): Database session
-        content_schema   (Union[`AnimeSchema`, `GameSchema`, `MovieSchema`, `SeriesSchema`]): Schema of the content to add
+        content_schema   (`AnimeSchema`|`GameSchema`|`MovieSchema`|`SeriesSchema`): Schema of the content to add
 
     Returns:
         `AnimeSchema`: The added `AnimeSchema`
@@ -115,17 +115,17 @@ async def add_content(
 async def update_content(
     db: AsyncSession,
     content_id: int,
-    content_schema: Union[AnimeSchema, GameSchema, MovieSchema, SeriesSchema],
-):
+    content_schema: AnimeSchema | GameSchema | MovieSchema | SeriesSchema,
+) -> AnimeSchema | None:
     """Update content in the database
 
     Args:
         db   (AsyncSession): Database session
         content_id  (int): ID of the content to update
-        content_schema     (Union[`AnimeSchema`, `GameSchema`, `MovieSchema`, `SeriesSchema`]): Schema of the content to add
+        content_schema     (`AnimeSchema`|`GameSchema`|`MovieSchema`|`SeriesSchema`): Schema of the content to add
 
     Returns:
-        Union[`AnimeSchema`,None]: The updated `AnimeSchema` or None if not found
+        `AnimeSchema`|None: The updated `AnimeSchema` or None if not found
     """
     model_class = model_mapping.get(type(content_schema))
     if not model_class:
@@ -146,7 +146,7 @@ async def update_content(
     return content
 
 
-async def delete_content(db: AsyncSession, content_id: int):
+async def delete_content(db: AsyncSession, content_id: int) -> dict[str, str]:
     """Delete content from the database
 
     Args:

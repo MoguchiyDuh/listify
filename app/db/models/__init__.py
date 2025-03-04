@@ -1,4 +1,4 @@
-from .user_models import User, UserLibrary
+from .user_models import User, UserReview
 from .genre_tag_models import Genre, ContentGenreLink, Tag, ContentTagLink
 from .content import Anime, Game, Movie, Series, Content
 
@@ -11,7 +11,7 @@ __all__ = (
     "Movie",
     "Series",
     "User",
-    "UserLibrary",
+    "UserReview",
     "Genre",
     "ContentGenreLink",
     "Tag",

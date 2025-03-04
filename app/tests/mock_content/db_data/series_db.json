@@ -1,0 +1,20 @@
+{
+  "title": "Game of Thrones",
+  "description": "Seven noble families fight for control of the mythical land of Westeros. Friction between the houses leads to full-scale war. All while a very ancient evil awakens in the farthest north. Amidst the war, a neglected military order of misfits, the Night's Watch, is all that stands between the realms of men and icy horrors beyond.",
+  "score": 8.5,
+  "popularity": 764,
+  "image_url": "https://image.tmdb.org/t/p/original/1XS1oqL89opfnbLl8WnZY1O1uJx.jpg",
+  "age_rating": "R",
+  "studios": [
+    "Revolution Sun Studios",
+    "Television 360",
+    "Generator Entertainment",
+    "Bighead Littlehead"
+  ],
+  "release_date": "2011-04-17",
+  "genres": ["Sci-Fi & Fantasy", "Drama", "Action & Adventure"],
+  "tags": [],
+  "end_date": "2019-05-19",
+  "episodes": 73,
+  "is_ongoing": false
+}

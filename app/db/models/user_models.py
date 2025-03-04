@@ -14,17 +14,17 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.connection import Base
-from .enums import Status, ContentType
+from .enums import Status
 
 
-class UserLibrary(Base):
-    """Represents a user's library of content.
+class UserReview(Base):
+    """Represents a user review entity.
 
     Attributes:
         id (int): Primary key, auto-incremented.
         user_id (int): Foreign key to the `User` entity.
         content_id (int): Foreign key to the `Content` entity.
-        user_rating (Optional[int]): User rating for the content, from 0-10.
+        user_score (Optional[int]): User rating for the content, from 0-10.
         comment (Optional[str]): Optional comment for the content.
         favorite (bool): Whether the content is marked as a favorite or not.
         status (`Status`): Enum representing the status of content in a user's queue.
@@ -34,31 +34,32 @@ class UserLibrary(Base):
         content (`Content`): The content entity linked to this entry. One-to-many relationship with `Content`.
     """
 
-    __tablename__ = "users_libraries"
+    __tablename__ = "users_reviews"
     __table_args__ = (
         CheckConstraint(
-            "user_rating >= 0 AND user_rating <= 10", name="check_user_rating_range"
+            "user_score >= 0 AND user_score <= 10", name="check_user_score_range"
         ),
         CheckConstraint("priority >= 0 AND priority <= 3", name="check_priority_range"),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     content_id: Mapped[int] = mapped_column(ForeignKey("content.id"), nullable=False)
-    user_rating: Mapped[Optional[int]] = mapped_column(SmallInteger, nullable=True)
+    user_score: Mapped[Optional[int]] = mapped_column(SmallInteger, nullable=True)
     comment: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     favorite: Mapped[bool] = mapped_column(Boolean, default=False)
     status: Mapped[Status] = mapped_column(SqlEnum(Status), nullable=False)
     priority: Mapped[int] = mapped_column(SmallInteger, default=0, nullable=False)
     creation_date: Mapped[date] = mapped_column(Date, default=date.today())
 
-    user: Mapped["User"] = relationship("User", back_populates="library")
+    content_type = relationship("Content")
+    user: Mapped["User"] = relationship("User", back_populates="reviews")
     contents: Mapped[List["Content"]] = relationship(
-        "Content", secondary="library_content_link", back_populates="libraries"
+        "Content", secondary="review_content_link", back_populates="reviews"
     )
 
     def __repr__(self):
-        return f"<UserLibrary {self.id} for {self.user_id} linked to {self.content_id}>"
+        return f"<UserReview {self.id} for user {self.user_id} linked to {self.content_id}>"
 
 
 class User(Base):
@@ -70,7 +71,7 @@ class User(Base):
         email (str): Unique email, indexed and non-nullable.
         hashed_password (str): Hashed password for user authentication.
         avatar (Optional[str]): Optional URL for the user's avatar.
-        library (List[`UserLibrary`]): List of associated queue entries. One-to-many relationship with `UserLibrary`.
+        review (List[`UserReview`]): List of associated queue entries. One-to-many relationship with `UserReview`.
     """
 
     __tablename__ = "users"
@@ -86,8 +87,8 @@ class User(Base):
     avatar: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     creation_date: Mapped[date] = mapped_column(Date, default=date.today())
 
-    library: Mapped[List[UserLibrary]] = relationship(
-        "UserLibrary", back_populates="user"
+    reviews: Mapped[List[UserReview]] = relationship(
+        "UserReview", back_populates="user", cascade="all, delete"
     )
 
     def __repr__(self):

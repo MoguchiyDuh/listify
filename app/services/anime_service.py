@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Optional, Union
+from typing import Optional
 import aiohttp
 
 from . import logger
@@ -16,9 +16,7 @@ age_restriction_map = {
 }
 
 
-async def fetch_anime(
-    title: str, year: Optional[int] = None
-) -> Union[AnimeSchema, dict]:
+async def fetch_anime(title: str, year: Optional[int] = None) -> AnimeSchema | dict:
     """
     Fetches anime details using the Jikan API and returns an `AnimeSchema` object.
 
@@ -26,7 +24,7 @@ async def fetch_anime(
         title (str): The title of the anime.
 
     Returns:
-        Union[`AnimeSchema`,dict]: An `AnimeSchema` object if the anime is found,
+        AnimeSchema|dict: An `AnimeSchema` object if the anime is found,
         otherwise a dictionary with an error message.
     """
     jikan_url = f"https://api.jikan.moe/v4/anime?q={title}&limit=5&unapproved=true"
@@ -52,9 +50,10 @@ async def fetch_anime(
         age_rating=age_restriction_map[item["rating"]],
         studios=[studio["name"] for studio in item.get("studios", [])],
         release_date=date.fromisoformat(item["aired"]["from"].split("T")[0]),
+        end_date=date.fromisoformat(item["aired"]["to"].split("T")[0]),
         is_ongoing=item["airing"],
         episodes=item["episodes"],
-        genres=[genre["name"] for genre in item.get("genres", [])],
-        tags=[tag["name"] for tag in item.get("tags", [])],
+        genres=[genre["name"] for genre in item["genres"]],
+        tags=[theme["name"] for theme in item["themes"]],
     )
     return anime

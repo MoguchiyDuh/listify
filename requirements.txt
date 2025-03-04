@@ -8,7 +8,7 @@ itsdangerous
 pydantic
 pydantic[email]
 python-Levenshtein
-psycopg2 # or psycopg2-binary
+psycopg2-binary
 python-dotenv
 python-multipart
 sqlalchemy

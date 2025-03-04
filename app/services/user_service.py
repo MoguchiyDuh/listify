@@ -20,7 +20,7 @@ from schemas.user_schemas import UserCreate, UserUpdate
 logger = setup_logger("user_service")
 
 
-async def authenticate_user(credentials: str, password: str, db: AsyncSession) -> str:
+async def authenticate_user(db: AsyncSession, credentials: str, password: str) -> str:
     """
     Authenticate a user with given credentials and password.
 
@@ -55,7 +55,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/token")
 
 
 async def get_current_user(
-    token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_session)
+    db: AsyncSession = Depends(get_session), token: str = Depends(oauth2_scheme)
 ) -> User:
     """
     Retrieve the current user based on the provided token.
@@ -112,7 +112,7 @@ async def register_user(db: AsyncSession, user_schema: UserCreate) -> User:
     return user
 
 
-def save_image(avatar: UploadFile, dir: str) -> str:
+def __save_image(avatar: UploadFile, dir: str) -> str:
     """
     Saves an uploaded image file to the specified directory.
 
@@ -171,7 +171,7 @@ async def update_user_profile(
             logger.warning("Avatar is too big")
         else:
             try:
-                avatar_path = save_image(user_schema.avatar, dir="./static/avatars")
+                avatar_path = __save_image(user_schema.avatar, dir="./static/avatars")
                 if os.path.exists(user.profile_photo):
                     os.remove(user.avatar)
                 user_schema.avatar = avatar_path

@@ -21,13 +21,13 @@ class BaseModelSchema(BaseModel):
     """
 
     title: str
-    description: Optional[str] = None
-    score: Optional[float] = None
-    popularity: Optional[int] = None
-    image_url: Optional[str] = None
-    age_rating: Optional[AgeRating] = None
-    studios: Optional[List[str]] = None
-    release_date: Optional[date] = None
+    description: Optional[str]
+    score: Optional[float]
+    popularity: Optional[int]
+    image_url: Optional[str]
+    age_rating: Optional[AgeRating]
+    studios: Optional[List[str]]
+    release_date: Optional[date]
     genres: List[str]
     tags: List[str]
 
@@ -47,7 +47,7 @@ class BaseModelSchema(BaseModel):
 class AnimeSchema(BaseModelSchema):
     """A schema for anime models.
 
-    <h2>Inherited Attributes from `BaseModelSchema`:</h2>
+    <h2>Inherited Attributes from BaseModelSchema:</h2>
         **title** (str): The title of the anime.
         **description** (Optional[str]): The description of the anime.
         **score** (Optional[float]): A float between 0 and 10 representing the score of the anime.
@@ -59,15 +59,16 @@ class AnimeSchema(BaseModelSchema):
         **genres** (List[str]): A list of strings representing the genres of the anime.
         **tags** (List[str]): A list of strings representing the tags of the anime.
 
-    <h2>Specific Attributes for `AnimeSchema`:</h2>
+    <h2>Specific Attributes for AnimeSchema:</h2>
         **translated_title** (Optional[str]): The translated title of the anime.
+        **end_date** (Optional[date]): The end date of the series, represented as a number of days since the start.
         **episodes** (Optional[int]): The number of episodes in the anime.
         **is_ongoing** (bool): A boolean indicating whether the anime is ongoing.
-
     """
 
-    translated_title: Optional[str] = None
-    episodes: Optional[int] = None
+    translated_title: Optional[str]
+    end_date: Optional[date]
+    episodes: Optional[int]
     is_ongoing: bool = False
 
 
@@ -94,7 +95,7 @@ class GameSchema(BaseModelSchema):
 
     available_platforms: List[Platforms]
     playtime: Optional[int]
-    stores: Optional[List[str]] = None
+    stores: Optional[List[str]]
 
 
 class MovieSchema(BaseModelSchema):
@@ -135,11 +136,11 @@ class SeriesSchema(BaseModelSchema):
         **tags** (List[str]): A list of strings representing the tags of the anime.
 
     <h2> Specific Attributes for `SeriesSchema`:</h2>
-        **episode_duration** (Optional[int]) : The duration of each episode in minutes.
+        **end_date** (Optional[date]): The end date of the series, represented as a number of days since the start.
         **episodes**   (Optional[int]) : The total number of episodes in the series.
-        **is_ongoing**(bool) - Whether the series is currently ongoing or not
+        **is_ongoing** (bool): Whether the series is currently ongoing or not.
     """
 
-    episode_duration: Optional[int]
+    end_date: Optional[date]
     episodes: Optional[int]
     is_ongoing: bool = False

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional, Union
+from typing import Optional
 from datetime import date
 from fastapi import UploadFile
 
@@ -27,13 +27,13 @@ class UserCreate(BaseModel):
         username (str): The unique username of the user.
         email (EmailStr): The user's email address.
         password (str): The hashed password of the user.
-        avatar (Optional[Union[UploadFile, str]]): The avatar file or URL (optional).
+        avatar (Optional[UploadFile | str]): The avatar file or URL (optional).
     """
 
     username: str
     email: EmailStr
-    password: str = Field(..., alias="hashed_password")
-    avatar: Optional[Union[UploadFile, str]] = None
+    password: str
+    avatar: Optional[UploadFile | str] = None
 
 
 class UserUpdate(BaseModel):
@@ -43,11 +43,11 @@ class UserUpdate(BaseModel):
     Attributes:
         username (Optional[str]): Updated username (if provided).
         email (Optional[EmailStr]): Updated email address (if provided).
-        avatar (Optional[Union[UploadFile, str]]): New avatar file or URL (optional).
+        avatar (Optional[UploadFile | str]): New avatar file or URL (optional).
         password (Optional[str]): Updated password (if provided).
     """
 
     username: Optional[str] = None
     email: Optional[EmailStr] = None
-    avatar: Optional[Union[UploadFile, str]] = None
-    password: Optional[str] = Field(None, alias="hashed_password")
+    avatar: Optional[UploadFile | str] = None
+    password: Optional[str] = None

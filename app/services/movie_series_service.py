@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Optional, Union
+from typing import Optional
 import aiohttp
 
 from . import logger
@@ -38,7 +38,7 @@ TMDB_POSTER_URL = "https://image.tmdb.org/t/p/original"
 
 async def fetch_movie(
     title: str, year: Optional[int] = None
-) -> Union[MovieSchema, dict[str, str]]:
+) -> MovieSchema | dict[str, str]:
     """
     Searches for a movie by title (and optionally by year) using the TMDB API.
 
@@ -47,7 +47,7 @@ async def fetch_movie(
         year (int, optional): The release year of the movie.
 
     Returns:
-        Union[MovieSchema, dict[str, str]]: A `MovieSchema` object containing movie details
+        MovieSchema | dict[str, str]: A `MovieSchema` object containing movie details
         if a match is found, otherwise a dictionary with an error message: `{"msg": ...}`.
     """
     tmdb_search_url = (
@@ -92,6 +92,7 @@ async def fetch_movie(
         age_rating=None,
         duration=item["runtime"],
         genres=[genre["name"] for genre in item["genres"]],
+        tags=[],
     )
     # Searching for age restriction
     for country in item["release_dates"]["results"]:
@@ -107,7 +108,7 @@ async def fetch_movie(
 
 async def fetch_series(
     title: str, year: Optional[int] = None
-) -> Union[SeriesSchema, dict[str, str]]:
+) -> SeriesSchema | dict[str, str]:
     """
     Searches for series by title (and optionally by year) using the TMDB API.
     If a match is found with high confidence (>90%), it returns `SeriesSchema` object.
@@ -118,7 +119,7 @@ async def fetch_series(
         year (int, optional): The release year of the series.
 
     Returns:
-        Union[SeriesSchema, dict[str, str]]: A `SeriesSchema` object containing series details
+        SeriesSchema | dict[str, str]: A `SeriesSchema` object containing series details
         if a match is found, otherwise a dictionary with an error message: `{"msg": ...}`.
     """
     tmdb_search_url = (
@@ -161,18 +162,11 @@ async def fetch_series(
         ),
         studios=[studio["name"] for studio in item["production_companies"]],
         release_date=date.fromisoformat(item["first_air_date"]),
-        episode_duration=(
-            item["episode_run_time"]
-            if not isinstance(item["episode_run_time"], list)
-            else (
-                None
-                if len(item["episode_run_time"]) == 0
-                else item["episode_run_time"][0]
-            )
-        ),
+        end_date=date.fromisoformat(item["last_air_date"]),
         age_rating=None,
         episodes=item["number_of_episodes"],
         genres=[genre["name"] for genre in item["genres"]],
+        tags=[],
     )
     # Searching for age restriction
     for country in item["content_ratings"]["results"]:

@@ -72,24 +72,24 @@ class Content(Base):
     tags: Mapped[List["Tag"]] = relationship(
         "Tag", secondary="content_tag_link", back_populates="contents"
     )
-    libraries: Mapped[List["UserLibrary"]] = relationship(
-        "UserLibrary",
-        secondary="library_content_link",
+    reviews: Mapped[List["UserReview"]] = relationship(
+        "UserReview",
+        secondary="review_content_link",
         back_populates="contents",
     )
 
 
-class LibraryContentLink(Base):
-    """A base class for all library content links.
+class ReviewContentLink(Base):
+    """A link table for reviews and content, used to create a many-to-many relationship between them.
 
     Attributes:
-        library_id (int): The unique identifier of the library that owns this link.
-        content_id  (int): The unique identifier of the content in the library.
+        review_id (int): The unique identifier of the review.
+        content_id  (int): The unique identifier of the content.
     """
 
-    __tablename__ = "library_content_link"
+    __tablename__ = "review_content_link"
 
-    library_id: Mapped[int] = mapped_column(
-        ForeignKey("users_libraries.id"), primary_key=True
+    review_id: Mapped[int] = mapped_column(
+        ForeignKey("users_reviews.id"), primary_key=True
     )
     content_id: Mapped[int] = mapped_column(ForeignKey("content.id"), primary_key=True)
